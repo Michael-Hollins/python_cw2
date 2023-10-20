@@ -1,9 +1,13 @@
+import sys
+sys.path.insert(0, 'C:/Users/micha/OneDrive/Documents/AI_MSc/coursework/python_cw2_mdh323')
+
+
+from tube.map import TubeMap
+import pprint
+from network.graph_builder_functions import *
+ 
+ 
 class NeighbourGraphBuilder:
-    """
-    Task 2: Complete the definition of the NeighbourGraphBuilder class by:
-    - completing the "build" method below (don't hesitate to divide your code 
-      into several sub-methods, if needed)
-    """
 
     def __init__(self):
         pass
@@ -70,20 +74,13 @@ class NeighbourGraphBuilder:
                 If the input data (tubemap) is invalid, 
                 the method should return an empty dict.
         """
-        # TODO: Complete this method
-        return dict()
+        try:
+            graph = dict()
+            for station_id in tubemap.stations:
+                neighbours = get_neighbours(station_id, tubemap)
+                neighbour_inner_dict = return_neighbour_connections(neighbours, tubemap, station_id)
+                graph.update({station_id: neighbour_inner_dict})
+            return graph
+        except:
+            return dict()
 
-
-def test_graph():
-    from tube.map import TubeMap
-    tubemap = TubeMap()
-    tubemap.import_from_json("data/london.json")
-
-    graph_builder = NeighbourGraphBuilder()
-    graph = graph_builder.build(tubemap)
-
-    print(graph)
-
-
-if __name__ == "__main__":
-    test_graph()
