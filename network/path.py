@@ -1,13 +1,28 @@
+import sys
+sys.path.insert(0, 'C:/Users/micha/OneDrive/Documents/AI_MSc/coursework/python_cw2_mdh323')
+import pprint
 from network.graph import NeighbourGraphBuilder
+from tube.map import TubeMap
+
+## Functions
+
+def get_unvisited_neighbours(neighbour_dict, id_to_check, unvisited_nodes):
+    neighbours = neighbour_dict[id_to_check].copy()
+    for key in list(neighbours.keys()):
+        if key not in unvisited_nodes:
+            del neighbours[key]
+    return neighbours
+
+
+def get_quickest_connection(connections):
+    return min(connections, key = lambda connection:connection.time)
+
+
+def first_common_elements(list1, list2):
+    return [element for element in list1 if element in list2][0]
+  
 
 class PathFinder:
-    """
-    Task 3: Complete the definition of the PathFinder class by:
-    - completing the definition of the __init__() method (if needed)
-    - completing the "get_shortest_path()" method (don't hesitate to divide 
-      your code into several sub-methods)
-    """
-
     def __init__(self, tubemap):
         """
         Args:
@@ -17,34 +32,12 @@ class PathFinder:
 
         graph_builder = NeighbourGraphBuilder()
         self.graph = graph_builder.build(self.tubemap)
-        
-        # Feel free to add anything else needed here.
-        
+
         
     def get_shortest_path(self, start_station_name, end_station_name):
         """ Find ONE shortest path from start_station_name to end_station_name.
         
         The shortest path is the path that takes the least amount of time.
-
-        For instance, get_shortest_path('Stockwell', 'South Kensington') 
-        should return the list:
-        [Station(245, Stockwell, {2}), 
-         Station(272, Vauxhall, {1, 2}), 
-         Station(198, Pimlico, {1}), 
-         Station(273, Victoria, {1}), 
-         Station(229, Sloane Square, {1}), 
-         Station(236, South Kensington, {1})
-        ]
-
-        If start_station_name or end_station_name does not exist, return None.
-        
-        You can use the Dijkstra algorithm to find the shortest path from
-        start_station_name to end_station_name.
-
-        Find a tutorial on YouTube to understand how the algorithm works, 
-        e.g. https://www.youtube.com/watch?v=GazC3A4OQTE
-        
-        Alternatively, find the pseudocode on Wikipedia: https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
 
         Args:
             start_station_name (str): name of the starting station
@@ -58,8 +51,75 @@ class PathFinder:
                 Returns a list with one Station object (the station itself) if 
                 start_station_name and end_station_name are the same.
         """
-        # TODO: Complete this method
-        return [] 
+        
+        # Catch unwanted cases first
+        station_name_list = [station.name for station in self.tubemap.stations.values()]
+        if start_station_name not in station_name_list:
+            return None
+        elif end_station_name not in station_name_list:
+            return None
+            
+        if start_station_name == end_station_name:
+            return [start_station_name]
+            
+        # Initialise objects for Djikstra's search algorithm
+        
+        # A dictionary to retrieve a station's ID from its name
+        station_name_to_id = {station.name:station.id for station in self.tubemap.stations.values()}
+        start_station_id = station_name_to_id[start_station_name]
+        end_station_id = station_name_to_id[end_station_name]
+        
+        # A dictionary of all unvisited stations
+        unvisited_stations = {station.id:station.name for station in self.tubemap.stations.values()}
+        
+        # A dictionary of estimated times for all stations, initalising at infinity
+        estimated_times = {station.id:float('inf') for station in self.tubemap.stations.values()}
+        
+        # A list to store the nodes that Djikstra's algorithm works through
+        route_so_far = list()
+        
+        # Set the time to the start to be zero and remove start from univisited nodes
+        estimated_times[start_station_id] = 0
+        current_node = start_station_id
+        route_so_far.append(start_station_id)
+        
+        # Run the algorithm until we reach our end node
+        while current_node != end_station_id: 
+            neighbours = get_unvisited_neighbours(self.graph, current_node, unvisited_stations)
+
+            for neighbour_key in list(neighbours.keys()):
+                quickest_connection = get_quickest_connection(neighbours[neighbour_key])
+                time_to_check = quickest_connection.time + estimated_times[current_node]
+                if time_to_check < estimated_times[neighbour_key]:
+                    estimated_times[neighbour_key] = time_to_check
+
+            del unvisited_stations[current_node]
+
+            destination_not_reached = end_station_id in unvisited_stations
+
+            if destination_not_reached:
+                remaining_node_times = {key: estimated_times[key] for key in unvisited_stations}
+                new_node = min(remaining_node_times, key = remaining_node_times.get)
+                route_so_far.append(new_node)
+                current_node = new_node
+        
+        # Trace back our route
+        route_taken = list()
+
+        while route_so_far[-1] != start_station_id:
+            last_node = route_so_far[-1]
+            route_taken.append(last_node)
+            neighbours = list(self.graph[last_node].keys())
+            previous_station_id = first_common_elements(route_so_far, neighbours)
+            previous_station_index = route_so_far.index(previous_station_id)
+            route_so_far = route_so_far[:previous_station_index + 1]
+
+        route_taken.append(start_station_id)
+        route_taken = route_taken[::-1]
+
+        route_taken = [self.tubemap.stations[station_id] for station_id in route_taken]
+        
+        return route_taken
 
 
 def test_shortest_path():

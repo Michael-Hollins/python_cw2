@@ -14,7 +14,7 @@ def find_connections(connection_ID_list, ID):
             matches.append(connection_ID_list[i])
     
     return matches
-    
+
 
 def get_neighbour_IDs(match_list, station_id):
     """ Strip the matches just down to a list of unqiue station IDs excluding the station ID itself """
@@ -24,6 +24,7 @@ def get_neighbour_IDs(match_list, station_id):
     neighbours = list(set(flat_list))
     
     return neighbours
+    
 
 def get_neighbours(station_id, tubemap):
     """ For each station, get a list of station IDs of its neighbours via connections."""

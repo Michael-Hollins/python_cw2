@@ -74,11 +74,12 @@ class NeighbourGraphBuilder:
                 If the input data (tubemap) is invalid, 
                 the method should return an empty dict.
         """
+        self.tubemap = tubemap
         try:
             graph = dict()
-            for station_id in tubemap.stations:
-                neighbours = get_neighbours(station_id, tubemap)
-                neighbour_inner_dict = return_neighbour_connections(neighbours, tubemap, station_id)
+            for station_id in set(list(self.tubemap.stations.keys())):
+                neighbours = get_neighbours(station_id, self.tubemap)
+                neighbour_inner_dict = return_neighbour_connections(neighbours, self.tubemap, station_id)
                 graph.update({station_id: neighbour_inner_dict})
             return graph
         except:
