@@ -44,17 +44,26 @@ test_import()
 
 
 def check_graph_pairs():
-    # TODO: Check that graph['110']['17'] == graph['17']['110']
-    pass
-    
+	# Checks that graph['110']['17'] == graph['17']['110'] etc.
+	tubemap = TubeMap()
+	tubemap.import_from_json("data/london.json")
+	graph_builder = NeighbourGraphBuilder()
+	graph = graph_builder.build(tubemap)
+	
+	for i in graph.keys():
+		for j in graph[i].keys():
+			assert graph[i][j] == graph[j][i]
+
+check_graph_pairs()
+	
 def test_graph():
-    from tube.map import TubeMap
-    tubemap = TubeMap()
-    tubemap.import_from_json("data/london.json")
+	from tube.map import TubeMap
+	tubemap = TubeMap()
+	tubemap.import_from_json("data/london.json")
 
-    graph_builder = NeighbourGraphBuilder()
-    graph = graph_builder.build(tubemap)
+	graph_builder = NeighbourGraphBuilder()
+	graph = graph_builder.build(tubemap)
 
-    print(graph)
+	print(graph)
 
 test_graph()

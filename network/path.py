@@ -4,9 +4,10 @@ import pprint
 from network.graph import NeighbourGraphBuilder
 from tube.map import TubeMap
 
-## Functions
+# Functions to help with the Djikstra algorithm
 
 def get_unvisited_neighbours(neighbour_dict, id_to_check, unvisited_nodes):
+    """ Return a list of neighbour station IDs not yet fully visited. """
     neighbours = neighbour_dict[id_to_check].copy()
     for key in list(neighbours.keys()):
         if key not in unvisited_nodes:
@@ -15,10 +16,12 @@ def get_unvisited_neighbours(neighbour_dict, id_to_check, unvisited_nodes):
 
 
 def get_quickest_connection(connections):
+    """ Return the quickest connection from a list of connection objects."""
     return min(connections, key = lambda connection:connection.time)
 
 
 def first_common_elements(list1, list2):
+    """ For each item in list 1, return its first instance in list 2."""
     return [element for element in list1 if element in list2][0]
   
 
@@ -59,31 +62,30 @@ class PathFinder:
         elif end_station_name not in station_name_list:
             return None
             
-        if start_station_name == end_station_name:
-            return [start_station_name]
             
         # Initialise objects for Djikstra's search algorithm
         
-        # A dictionary to retrieve a station's ID from its name
+        ## A dictionary to retrieve a station's ID from its name
         station_name_to_id = {station.name:station.id for station in self.tubemap.stations.values()}
         start_station_id = station_name_to_id[start_station_name]
         end_station_id = station_name_to_id[end_station_name]
         
-        # A dictionary of all unvisited stations
+        ## A dictionary of all unvisited stations
         unvisited_stations = {station.id:station.name for station in self.tubemap.stations.values()}
         
-        # A dictionary of estimated times for all stations, initalising at infinity
+        ## A dictionary of estimated times for all stations, initalising at infinity
         estimated_times = {station.id:float('inf') for station in self.tubemap.stations.values()}
         
-        # A list to store the nodes that Djikstra's algorithm works through
+        ## A list to store the nodes that Djikstra's algorithm works through
         route_so_far = list()
         
-        # Set the time to the start to be zero and remove start from univisited nodes
+        ## Set the time to the start to be zero and remove start from univisited nodes
         estimated_times[start_station_id] = 0
         current_node = start_station_id
         route_so_far.append(start_station_id)
         
-        # Run the algorithm until we reach our end node
+        # Run the algorithm until we reach the end node
+        # This follows the pseudocode outlined here: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Algorithm
         while current_node != end_station_id: 
             neighbours = get_unvisited_neighbours(self.graph, current_node, unvisited_stations)
 
