@@ -51,15 +51,14 @@ def zone_set(zone_string):
 
 
 def get_stations(data):
-	""" Returns a dictionary that indexes Station instances by their id, (key=id (str), value=Station) 
+	""" Returns a dictionary that indexes Station instances, (key=id (str), value=Station) 
 
-	Note that we have to parse the zones correctly into a set of ints using our zone_set() function.
+	We have to parse the zones correctly into a set of ints using the zone_set() function.
 	
 	Arguments:
 		data (dict): A dictionary containing a "stations" key from our json file.
 	Output:
-		(dict) : a dictionary that indexes Station instances by their id(key=id (str), value=Station).
-		This will help form an attribute of TubeMap. 
+		(dict) : a dictionary that indexes Station instances by (key=id (str), value=Station). 
 	"""
 	stations = dict()
 
@@ -99,17 +98,13 @@ def get_trainlines(data):
 def get_connections(data, stations, lines):
 	""" Returns a list of Connection instances from a dictionary.
 	
-	Note each item in the connections list of dictionaries will return station and line IDs.
-	To get the values, we will need to load in the corresponding stations and lines dictionaries.
-	We define these functions above.
+	We will need to load in the stations and lines dictionaries using above functions.
 	
 	Arguments:
 		data (dict): A dictionary containing a "connections" key from our json file.
 	Output:
 		(list): A list of Connection instances.
 	"""
-	# Load stations and lines dictionaries so we can get values from keys.
-	
 	# Initalise the list
 	connections = list()
 	

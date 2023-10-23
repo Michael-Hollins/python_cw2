@@ -1,5 +1,5 @@
 def get_connection_ID_pairs(tubemap):
-    """ Returns a list of ID pairs for each connection instance in tubemap.connections"""
+    """ Returns list of ID pairs for each connection instance in tubemap.connections"""
     connection_ids = list()
     for i in range(len(tubemap.connections)):
         connection_ids.append([station.id for station in tubemap.connections[i].stations])
@@ -7,7 +7,7 @@ def get_connection_ID_pairs(tubemap):
     return connection_ids
 
 def find_connections(connection_ID_list, ID):
-    """For a given ID, return all the connection ID pairs where ID is in the list """
+    """For given ID, return all the connection ID pairs where ID is in the list"""
     matches = list()
     for i in range(len(connection_ID_list)):
         if ID in connection_ID_list[i]:
@@ -17,7 +17,7 @@ def find_connections(connection_ID_list, ID):
 
 
 def get_neighbour_IDs(match_list, station_id):
-    """ Strip the matches just down to a list of unqiue station IDs excluding the station ID itself """
+    """ Strip matches down to list of unqiue station IDs excluding station ID itself """
     for item in match_list:
         item.remove(station_id)
     flat_list = [item for sublist in match_list for item in sublist]
